@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(env)",
+      "Bash(aws sts *)",
+      "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" sts get-caller-identity)",
+      "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" sts get-caller-identity --profile sec_acc)",
+      "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" sts get-caller-identity --profile account-a)",
+      "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" s3api head-object --profile sec_acc --bucket sec-acc-tf-state-285629514281 --key ec2_scope_a/terraform.tfstate)",
+      "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" s3api head-object --bucket sec-acc-tf-state-285629514281 --key ec2_scope_a/terraform.tfstate)",
+      "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" s3api head-bucket --profile sec_acc --bucket sec-acc-tf-state-285629514281)",
+      "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" s3api list-objects-v2 --profile sec_acc --bucket sec-acc-tf-state-285629514281 --query 'Contents[].Key' --output text)",
+      "Read(//mnt/c/terraform/**)",
+      "Bash(terraform init *)",
+      "Bash(terraform validate *)",
+      "Bash(terraform providers *)",
+      "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" ec2 describe-instance-types --profile sec_acc --region us-east-1 --filters \"Name=free-tier-eligible,Values=true\" --query 'InstanceTypes[].InstanceType' --output text)"
+    ]
+  }
+}

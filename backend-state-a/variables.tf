@@ -4,7 +4,7 @@
 variable "account_label" {
   description = "Short label for this account"
   type        = string
-  default = "scope-a"
+  default = "sec_acc"
 }
 
 variable "aws_region" {
@@ -16,7 +16,7 @@ variable "aws_region" {
 variable "state_bucket_name" {
   description = "Globally unique S3 bucket name for this account's tfstate"
   type        = string
-  default     = "scope-a-tf-state-605134452604"
+  default     = "sec-acc-tf-state-285629514281"
 }
 
 variable "lock_table_name" {
@@ -29,6 +29,6 @@ variable "lock_table_name" {
 variable "managed_resource_prefix" {
   description = "Naming prefix used to scope S3/DynamoDB write permissions for the apply role to only resources this project manages (not the whole account)"
   type        = string
-  default = "scope-a-"
+  default = "sec_acc"
 }
 

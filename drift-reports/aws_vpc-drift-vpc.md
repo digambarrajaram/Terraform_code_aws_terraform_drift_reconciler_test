@@ -5,8 +5,8 @@ Resource exists in AWS but is not tracked in Terraform state and has no ManagedB
 ```json
 {
   "type": "aws_vpc",
-  "id": "vpc-0edb5c9d88acded81",
-  "arn": "arn:aws:ec2:us-east-1:285629514281:vpc/vpc-0edb5c9d88acded81",
+  "id": "vpc-083ac4f49b47c0335",
+  "arn": "arn:aws:ec2:us-east-1:285629514281:vpc/vpc-083ac4f49b47c0335",
   "tags": {
     "Name": "drift-vpc"
   },

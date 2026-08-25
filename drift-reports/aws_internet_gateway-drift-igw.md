@@ -5,8 +5,8 @@ Resource exists in AWS but is not tracked in Terraform state and has no ManagedB
 ```json
 {
   "type": "aws_internet_gateway",
-  "id": "igw-061e6dc2e263dd168",
-  "arn": "arn:aws:ec2:us-east-1:285629514281:internet-gateway/igw-061e6dc2e263dd168",
+  "id": "igw-091b518f859153244",
+  "arn": "arn:aws:ec2:us-east-1:285629514281:internet-gateway/igw-091b518f859153244",
   "tags": {
     "Name": "drift-igw"
   },

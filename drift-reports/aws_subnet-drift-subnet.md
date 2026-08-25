@@ -5,8 +5,8 @@ Resource exists in AWS but is not tracked in Terraform state and has no ManagedB
 ```json
 {
   "type": "aws_subnet",
-  "id": "subnet-0bfb463f44f6d5658",
-  "arn": "arn:aws:ec2:us-east-1:285629514281:subnet/subnet-0bfb463f44f6d5658",
+  "id": "subnet-08a29fbbd4c7fd331",
+  "arn": "arn:aws:ec2:us-east-1:285629514281:subnet/subnet-08a29fbbd4c7fd331",
   "tags": {
     "Name": "drift-subnet"
   },

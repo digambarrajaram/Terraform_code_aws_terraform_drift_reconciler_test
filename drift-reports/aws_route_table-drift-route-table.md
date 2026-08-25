@@ -5,8 +5,8 @@ Resource exists in AWS but is not tracked in Terraform state and has no ManagedB
 ```json
 {
   "type": "aws_route_table",
-  "id": "rtb-03f4484f10ea25f72",
-  "arn": "arn:aws:ec2:us-east-1:285629514281:route-table/rtb-03f4484f10ea25f72",
+  "id": "rtb-004b4714f6ba41284",
+  "arn": "arn:aws:ec2:us-east-1:285629514281:route-table/rtb-004b4714f6ba41284",
   "tags": {
     "Name": "drift-route-table"
   },

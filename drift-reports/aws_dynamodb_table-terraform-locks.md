@@ -10,7 +10,7 @@ Resource exists in AWS but is not tracked in Terraform state and has no ManagedB
   "tags": {},
   "is_default": false,
   "raw_name": "terraform-locks",
-  "created_at": "2026-08-25T09:33:32.279000+05:30"
+  "created_at": "2026-08-26T10:30:04.904000+05:30"
 }
 ```
 

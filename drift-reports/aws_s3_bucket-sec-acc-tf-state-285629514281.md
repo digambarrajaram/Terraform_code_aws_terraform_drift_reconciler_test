@@ -10,7 +10,7 @@ Resource exists in AWS but is not tracked in Terraform state and has no ManagedB
   "tags": {},
   "is_default": false,
   "raw_name": "sec-acc-tf-state-285629514281",
-  "created_at": "2026-08-25T04:03:34+00:00"
+  "created_at": "2026-08-26T05:00:06+00:00"
 }
 ```
 

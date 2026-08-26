@@ -158,12 +158,12 @@ resource "aws_instance" "drift_web_server" {
   root_block_device {
     volume_size           = 8
     volume_type           = "gp3"
-    encrypted             = true
+    encrypted             = false
     delete_on_termination = true
   }
 
   metadata_options {
-    http_tokens = "required" # IMDSv2
+    http_tokens = "optional" # IMDSv2
   }
 
   tags = {

@@ -15,3 +15,5 @@ Resource exists in AWS but is not tracked in Terraform state and has no ManagedB
 ```
 
 **Action:** Import this resource into Terraform or create the corresponding `.tf` resource block, then re-run the drift reconciler to track it.
+
+<!-- drift-reconciler: re-review 2026-08-26T11:33:52Z -->

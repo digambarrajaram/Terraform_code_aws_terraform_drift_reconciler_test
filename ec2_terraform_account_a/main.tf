@@ -9,7 +9,7 @@ terraform {
 
 provider "aws" {
   profile = "sec_acc"
-  region = "us-east-1"
+  region  = "us-east-1"
 }
 
 # ─────────────────────────────────────────────
@@ -34,7 +34,7 @@ resource "aws_subnet" "drift_subnet" {
   vpc_id                  = aws_vpc.drift_vpc.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "us-east-1a"
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = {
     Name = "drift-subnet"
@@ -167,7 +167,7 @@ resource "aws_instance" "drift_web_server" {
   }
 
   tags = {
-    Name = "WebServer"
+    Name = "WebServerld;s'"
   }
 }
 

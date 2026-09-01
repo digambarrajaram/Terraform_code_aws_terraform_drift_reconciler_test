@@ -7,3 +7,5 @@
 ```text
 AWS-0178 (aws_vpc.drift_vpc): Enable flow logs for VPC
 ```
+
+<!-- drift-reconciler: re-review 2026-09-01T07:03:50Z -->

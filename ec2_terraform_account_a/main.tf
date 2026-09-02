@@ -9,7 +9,7 @@ terraform {
 
 provider "aws" {
   profile = "sec_acc"
-  region = "us-east-1"
+  region  = "us-east-1"
 }
 
 # ─────────────────────────────────────────────
@@ -167,7 +167,7 @@ resource "aws_instance" "drift_web_server" {
   }
 
   tags = {
-    Name = "WebServer"
+    Name = "WebServerqwee"
   }
 }
 

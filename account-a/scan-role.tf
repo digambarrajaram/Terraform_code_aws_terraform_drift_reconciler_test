@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "scan_trust" {
 
     principals {
       type        = "AWS"
-      identifiers = [aws_iam_user.backend_identity.arn]
+      identifiers = [aws_iam_role.ec2_backend.arn]
     }
   }
 }
@@ -53,12 +53,19 @@ resource "aws_iam_role" "scan" {
   }
 }
 
-# Broad read access -- covers EC2/S3/DynamoDB/VPC/everything else `terraform
-# plan` needs to evaluate drift. Read-only, so breadth here is low-risk
-# (unlike the apply role, where breadth would be a real problem).
-resource "aws_iam_role_policy_attachment" "scan_readonly" {
-  role       = aws_iam_role.scan.name
-  policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+data "aws_iam_policy_document" "scan_read" {
+  statement {
+    sid       = "EC2VPCRead"
+    effect    = "Allow"
+    actions   = ["ec2:Describe*"]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "scan_read" {
+  name   = "ec2-vpc-read"
+  role   = aws_iam_role.scan.id
+  policy = data.aws_iam_policy_document.scan_read.json
 }
 
 # terraform plan takes a state lock even though it doesn't write resources,

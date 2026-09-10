@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "apply_trust" {
 
     principals {
       type        = "AWS"
-      identifiers = [aws_iam_user.backend_identity.arn]
+      identifiers = [aws_iam_role.ec2_backend.arn]
     }
   }
 }
@@ -80,11 +80,6 @@ data "aws_iam_policy_document" "apply_ec2_vpc" {
       "ec2:ModifyInstanceAttribute",
       "ec2:CreateTags",
       "ec2:DeleteTags",
-      "ec2:CreateVolume",
-      "ec2:DeleteVolume",
-      "ec2:AttachVolume",
-      "ec2:DetachVolume",
-      "ec2:ModifyVolume",
     ]
     resources = ["*"]
   }
@@ -127,12 +122,6 @@ data "aws_iam_policy_document" "apply_ec2_vpc" {
       "ec2:DeleteInternetGateway",
       "ec2:AttachInternetGateway",
       "ec2:DetachInternetGateway",
-      "ec2:CreateNatGateway",
-      "ec2:DeleteNatGateway",
-      "ec2:AllocateAddress",
-      "ec2:ReleaseAddress",
-      "ec2:AssociateAddress",
-      "ec2:DisassociateAddress",
     ]
     resources = ["*"]
   }
@@ -250,6 +239,7 @@ data "aws_iam_policy_document" "apply_state_access" {
     actions = [
       "s3:GetObject",
       "s3:PutObject",
+      "s3:DeleteObject",
       "s3:ListBucket",
     ]
     resources = [

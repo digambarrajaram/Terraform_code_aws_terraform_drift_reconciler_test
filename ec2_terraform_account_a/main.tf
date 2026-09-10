@@ -8,8 +8,8 @@ terraform {
 }
 
 provider "aws" {
-  profile = "sec_acc"
-  region = "us-east-1"
+  profile = "pri_acc"
+  region  = "us-east-1"
 }
 
 # ─────────────────────────────────────────────
@@ -144,12 +144,12 @@ resource "aws_vpc_security_group_egress_rule" "all_egress" {
   description       = "Allow outbound HTTPS for system updates and APIs"
 }
 # ─────────────────────────────────────────────
-# EC2 INSTANCE - FREE TIER (t3.micro)
+# EC2 INSTANCE - FREE TIER (t2.micro)
 # ─────────────────────────────────────────────
 
 resource "aws_instance" "drift_web_server" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t3.micro" # FREE TIER ELIGIBLE (750 hrs/month)
+  instance_type          = "t2.micro" # 1 vCPU, free-tier eligible where available
   subnet_id              = aws_subnet.drift_subnet.id
   vpc_security_group_ids = [aws_security_group.drift_web_ssh_sg.id]
 

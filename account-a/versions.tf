@@ -13,6 +13,6 @@ terraform {
 }
 
 provider "aws" {
-  profile = "sec_acc"
+  profile = "pri_acc"
   region = var.aws_region
 }

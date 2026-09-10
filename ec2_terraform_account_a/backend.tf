@@ -5,10 +5,10 @@ data "aws_caller_identity" "aws" {}
 # Uses S3 bucket and DynamoDB table created by bootstrap module
 terraform {
   backend "s3" {
-    bucket       = "sec-acc-tf-state-285629514281"
+    bucket       = "pri-acc-tf-state-605134452604"
     key          = "ec2_scope_a/terraform.tfstate"
     region       = "us-east-1"
-    profile      = "sec_acc"
+    profile      = "pri_acc"
     encrypt      = true
     use_lockfile = true
   }

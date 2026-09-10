@@ -34,6 +34,17 @@ data "aws_iam_policy_document" "apply_trust" {
       values   = ["repo:${var.github_org}/${var.github_repo}:environment:${var.apply_environment_name}"]
     }
   }
+
+  statement {
+    sid     = "BackendIdentityTrust"
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [aws_iam_user.backend_identity.arn]
+    }
+  }
 }
 
 resource "aws_iam_role" "apply" {

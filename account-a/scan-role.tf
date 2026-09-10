@@ -30,6 +30,17 @@ data "aws_iam_policy_document" "scan_trust" {
       values   = ["repo:${var.github_org}/${var.github_repo}:ref:refs/heads/${var.scan_allowed_branch}"]
     }
   }
+
+  statement {
+    sid     = "BackendIdentityTrust"
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [aws_iam_user.backend_identity.arn]
+    }
+  }
 }
 
 resource "aws_iam_role" "scan" {

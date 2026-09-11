@@ -6,7 +6,17 @@ variable "env_id" {
 variable "backend_role_arn" {
   description = "ARN of the fixed backend EC2 role trusted to assume these customer roles"
   type        = string
-  default     = "arn:aws:iam::605134452604:role/terraform-backend-ec2-scope-a"
+  default     = "arn:aws:iam::285629514281:role/drift-reconciler-ec2-backend"
+}
+
+variable "tf_state_bucket" {
+  description = "S3 bucket containing this customer's Terraform state"
+  type        = string
+}
+
+variable "tf_lock_table" {
+  description = "DynamoDB table used for this customer's Terraform state locking"
+  type        = string
 }
 
 variable "managed_resource_prefix" {

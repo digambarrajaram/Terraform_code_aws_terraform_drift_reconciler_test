@@ -20,7 +20,15 @@ resource "aws_iam_role" "apply" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
+
+# TESTING SCOPE — broad service coverage granted for test environment; revisit before any production customer onboarding (least-privilege per resource type actually in use).
 data "aws_iam_policy_document" "apply_write" {
+  # Known limitation: EC2 permissions remain an explicit action list. Resource-
+  # type-specific broadening is intentionally deferred rather than broadening
+  # this role to ec2:* or all-service resources.
   statement {
     sid    = "VPCWrite"
     effect = "Allow"
@@ -59,6 +67,130 @@ data "aws_iam_policy_document" "apply_write" {
       "ec2:DeleteTags",
     ]
     resources = ["*"]
+  }
+
+  statement {
+    sid    = "RDSWrite"
+    effect = "Allow"
+    actions = [
+      "rds:CreateDBInstance",
+      "rds:DeleteDBInstance",
+      "rds:ModifyDBInstance",
+      "rds:CreateDBSubnetGroup",
+      "rds:DeleteDBSubnetGroup",
+      "rds:AddTagsToResource",
+      "rds:RemoveTagsFromResource",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "LambdaWrite"
+    effect = "Allow"
+    actions = [
+      "lambda:CreateFunction",
+      "lambda:DeleteFunction",
+      "lambda:UpdateFunctionCode",
+      "lambda:UpdateFunctionConfiguration",
+      "lambda:TagResource",
+      "lambda:UntagResource",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "IAMWrite"
+    effect = "Allow"
+    actions = [
+      "iam:CreateRole",
+      "iam:DeleteRole",
+      "iam:PutRolePolicy",
+      "iam:DeleteRolePolicy",
+      "iam:AttachRolePolicy",
+      "iam:DetachRolePolicy",
+      "iam:TagRole",
+      "iam:UntagRole",
+      "iam:PassRole",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "S3Write"
+    effect = "Allow"
+    actions = [
+      "s3:CreateBucket",
+      "s3:DeleteBucket",
+      "s3:PutBucketPolicy",
+      "s3:PutBucketTagging",
+      "s3:PutObject",
+      "s3:DeleteObject",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "DynamoDBWrite"
+    effect = "Allow"
+    actions = [
+      "dynamodb:CreateTable",
+      "dynamodb:DeleteTable",
+      "dynamodb:UpdateTable",
+      "dynamodb:TagResource",
+      "dynamodb:UntagResource",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "SNSWrite"
+    effect = "Allow"
+    actions = [
+      "sns:CreateTopic",
+      "sns:DeleteTopic",
+      "sns:TagResource",
+      "sns:UntagResource",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "SQSWrite"
+    effect = "Allow"
+    actions = [
+      "sqs:CreateQueue",
+      "sqs:DeleteQueue",
+      "sqs:TagQueue",
+      "sqs:UntagQueue",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "StateBucketAccess"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:ListBucket",
+    ]
+    resources = [
+      "arn:aws:s3:::${var.tf_state_bucket}",
+      "arn:aws:s3:::${var.tf_state_bucket}/*",
+    ]
+  }
+
+  statement {
+    sid    = "LockTableAccess"
+    effect = "Allow"
+    actions = [
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+      "dynamodb:DeleteItem",
+    ]
+    resources = [
+      "arn:aws:dynamodb:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:table/${var.tf_lock_table}",
+    ]
   }
 }
 

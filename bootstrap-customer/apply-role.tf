@@ -30,6 +30,93 @@ data "aws_iam_policy_document" "apply_write" {
   # type-specific broadening is intentionally deferred rather than broadening
   # this role to ec2:* or all-service resources.
   statement {
+    sid    = "ReadForPlan"
+    effect = "Allow"
+    actions = [
+      "ec2:Describe*",
+      "ec2:Get*",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "RDSReadForPlan"
+    effect = "Allow"
+    actions = [
+      "rds:Describe*",
+      "rds:Get*",
+      "rds:List*",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "LambdaReadForPlan"
+    effect = "Allow"
+    actions = [
+      "lambda:Describe*",
+      "lambda:Get*",
+      "lambda:List*",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "IAMReadForPlan"
+    effect = "Allow"
+    actions = [
+      "iam:Describe*",
+      "iam:Get*",
+      "iam:List*",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "S3ReadForPlan"
+    effect = "Allow"
+    actions = [
+      "s3:Describe*",
+      "s3:Get*",
+      "s3:List*",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "DynamoDBReadForPlan"
+    effect = "Allow"
+    actions = [
+      "dynamodb:Describe*",
+      "dynamodb:Get*",
+      "dynamodb:List*",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "SNSReadForPlan"
+    effect = "Allow"
+    actions = [
+      "sns:Describe*",
+      "sns:Get*",
+      "sns:List*",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "SQSReadForPlan"
+    effect = "Allow"
+    actions = [
+      "sqs:Describe*",
+      "sqs:Get*",
+      "sqs:List*",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
     sid    = "VPCWrite"
     effect = "Allow"
     actions = [

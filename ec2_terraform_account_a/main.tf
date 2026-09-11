@@ -34,7 +34,7 @@ resource "aws_subnet" "drift_subnet" {
   vpc_id                  = aws_vpc.drift_vpc.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "us-east-1a"
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = {
     Name = "drift-subnet"
@@ -158,12 +158,12 @@ resource "aws_instance" "drift_web_server" {
   root_block_device {
     volume_size           = 8
     volume_type           = "gp3"
-    encrypted             = false
+    encrypted             = true
     delete_on_termination = true
   }
 
   metadata_options {
-    http_tokens = "optional" # IMDSv2
+    http_tokens = "required" # IMDSv2
   }
 
   tags = {

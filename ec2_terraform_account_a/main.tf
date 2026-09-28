@@ -163,7 +163,7 @@ resource "aws_instance" "drift_web_server" {
   }
 
   metadata_options {
-    http_tokens = "optional" # IMDSv2
+    http_tokens = "optional" 
   }
 
   tags = {

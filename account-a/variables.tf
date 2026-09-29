@@ -4,7 +4,7 @@
 variable "account_label" {
   description = "Short label for this account"
   type        = string
-  default = "scope-a"
+  default = "Secondary_AWS_Account"
 }
 
 variable "aws_region" {
@@ -16,7 +16,7 @@ variable "aws_region" {
 variable "state_bucket_name" {
   description = "Globally unique S3 bucket name for this account's tfstate"
   type        = string
-  default     = "scope-a-tf-state-605134452604"
+  default     = "Secondary-AWS-Account-tf-state-285629514281"
 }
 
 variable "lock_table_name" {
@@ -43,13 +43,13 @@ variable "scan_allowed_branch" {
 variable "apply_environment_name" {
   description = "GitHub Environment name (with required reviewers configured) that gates the APPLY role"
   type        = string
-  default     = "scope-a-apply" # override per account, e.g. "prod-b-apply"
+  default     = "sec-acc-apply" # override per account, e.g. "prod-b-apply"
 }
 
 variable "managed_resource_prefix" {
   description = "Naming prefix used to scope S3/DynamoDB write permissions for the apply role to only resources this project manages (not the whole account)"
   type        = string
-  default = "scope-a-"
+  default = "sec-acc-"
 }
 
 # Set true only in the FIRST account where you create the GitHub OIDC
@@ -64,5 +64,5 @@ variable "create_oidc_provider" {
 variable "existing_oidc_provider_arn" {
   description = "Only used when create_oidc_provider = false"
   type        = string
-  default     = "arn:aws:iam::605134452604:oidc-provider/token.actions.githubusercontent.com"
+  default     = "arn:aws:iam::285629514281:oidc-provider/token.actions.githubusercontent.com"
 }

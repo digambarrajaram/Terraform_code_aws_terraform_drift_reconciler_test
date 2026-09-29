@@ -13,6 +13,5 @@ terraform {
 }
 
 provider "aws" {
-  profile = "pri_acc"
   region = var.aws_region
 }

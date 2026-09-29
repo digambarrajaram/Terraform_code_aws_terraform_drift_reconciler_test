@@ -232,6 +232,120 @@ resource "aws_iam_role_policy" "apply_dynamodb" {
   policy = data.aws_iam_policy_document.apply_dynamodb.json
 }
 
+# ---- Lambda and CloudWatch Logs permissions ----
+data "aws_iam_policy_document" "apply_lambda" {
+  # Terraform refresh needs to discover log groups, and AWS requires these
+  # discovery actions to use Resource = "*".
+  statement {
+    sid    = "CloudWatchLogsRead"
+    effect = "Allow"
+    actions = [
+      "logs:Describe*",
+      "logs:List*",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "ManagedLambdaLogGroupWrite"
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:DeleteLogGroup",
+      "logs:PutRetentionPolicy",
+      "logs:DeleteRetentionPolicy",
+      "logs:TagResource",
+      "logs:UntagResource",
+    ]
+    resources = [
+      "arn:aws:logs:${var.aws_region}:*:log-group:/aws/lambda/${var.managed_resource_prefix}*",
+    ]
+  }
+
+  statement {
+    sid    = "ManagedLambdaLogStreamWrite"
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogStream",
+      "logs:DeleteLogStream",
+      "logs:PutLogEvents",
+    ]
+    resources = [
+      "arn:aws:logs:${var.aws_region}:*:log-group:/aws/lambda/${var.managed_resource_prefix}*:log-stream:*",
+    ]
+  }
+
+  statement {
+    sid    = "ManagedLambdaFunctionWrite"
+    effect = "Allow"
+    actions = [
+      "lambda:CreateFunction",
+      "lambda:DeleteFunction",
+      "lambda:UpdateFunctionCode",
+      "lambda:UpdateFunctionConfiguration",
+      "lambda:PublishVersion",
+      "lambda:AddPermission",
+      "lambda:RemovePermission",
+      "lambda:CreateAlias",
+      "lambda:UpdateAlias",
+      "lambda:DeleteAlias",
+      "lambda:PutFunctionConcurrency",
+      "lambda:DeleteFunctionConcurrency",
+      "lambda:PutFunctionEventInvokeConfig",
+      "lambda:UpdateFunctionEventInvokeConfig",
+      "lambda:DeleteFunctionEventInvokeConfig",
+      "lambda:TagResource",
+      "lambda:UntagResource",
+    ]
+    resources = [
+      "arn:aws:lambda:${var.aws_region}:*:function:${var.managed_resource_prefix}*",
+    ]
+  }
+
+  statement {
+    sid    = "ManagedLambdaFunctionRead"
+    effect = "Allow"
+    actions = [
+      "lambda:Get*",
+      "lambda:List*",
+    ]
+    resources = [
+      "arn:aws:lambda:${var.aws_region}:*:function:${var.managed_resource_prefix}*",
+    ]
+  }
+
+  statement {
+    sid    = "ManagedLambdaExecutionRoleAccess"
+    effect = "Allow"
+    actions = [
+      "iam:CreateRole",
+      "iam:DeleteRole",
+      "iam:GetRole",
+      "iam:UpdateRole",
+      "iam:UpdateAssumeRolePolicy",
+      "iam:TagRole",
+      "iam:UntagRole",
+      "iam:PassRole",
+      "iam:PutRolePolicy",
+      "iam:DeleteRolePolicy",
+      "iam:GetRolePolicy",
+      "iam:ListRolePolicies",
+      "iam:AttachRolePolicy",
+      "iam:DetachRolePolicy",
+      "iam:ListAttachedRolePolicies",
+    ]
+    resources = [
+      "arn:aws:iam::*:role/${var.managed_resource_prefix}*",
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "apply_lambda" {
+  name   = "lambda-write"
+  role   = aws_iam_role.apply.id
+  policy = data.aws_iam_policy_document.apply_lambda.json
+}
+
 # ---- Terraform state access (write -- apply modifies remote state) ----
 data "aws_iam_policy_document" "apply_state_access" {
   statement {

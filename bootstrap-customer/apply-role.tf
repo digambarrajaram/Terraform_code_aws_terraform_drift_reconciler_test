@@ -61,6 +61,15 @@ data "aws_iam_policy_document" "apply_write" {
     resources = ["*"]
   }
 
+  # Terraform must discover log groups during refresh; AWS requires this
+  # discovery action to use Resource = "*".
+  statement {
+    sid       = "CloudWatchLogsReadForPlan"
+    effect    = "Allow"
+    actions   = ["logs:DescribeLogGroups"]
+    resources = ["*"]
+  }
+
   statement {
     sid    = "IAMReadForPlan"
     effect = "Allow"
@@ -183,6 +192,23 @@ data "aws_iam_policy_document" "apply_write" {
       "lambda:UntagResource",
     ]
     resources = ["*"]
+  }
+
+  statement {
+    sid    = "LambdaLogGroupWrite"
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:DeleteLogGroup",
+      "logs:PutRetentionPolicy",
+      "logs:DeleteRetentionPolicy",
+      "logs:ListTagsForResource",
+      "logs:TagResource",
+      "logs:UntagResource",
+    ]
+    resources = [
+      "arn:aws:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/*",
+    ]
   }
 
   statement {

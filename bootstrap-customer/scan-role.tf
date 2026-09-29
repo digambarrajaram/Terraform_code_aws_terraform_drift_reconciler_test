@@ -54,6 +54,23 @@ data "aws_iam_policy_document" "scan_read" {
     resources = ["*"]
   }
 
+  # Terraform refresh needs to discover Lambda log groups while scanning.
+  statement {
+    sid       = "CloudWatchLogsRead"
+    effect    = "Allow"
+    actions   = ["logs:DescribeLogGroups"]
+    resources = ["*"]
+  }
+
+  statement {
+    sid       = "LambdaLogGroupTagsRead"
+    effect    = "Allow"
+    actions   = ["logs:ListTagsForResource"]
+    resources = [
+      "arn:aws:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/*",
+    ]
+  }
+
   statement {
     sid    = "IAMRead"
     effect = "Allow"

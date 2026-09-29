@@ -63,9 +63,9 @@ data "aws_iam_policy_document" "scan_read" {
   }
 
   statement {
-    sid       = "LambdaLogGroupTagsRead"
-    effect    = "Allow"
-    actions   = ["logs:ListTagsForResource"]
+    sid     = "LambdaLogGroupTagsRead"
+    effect  = "Allow"
+    actions = ["logs:ListTagsForResource"]
     resources = [
       "arn:aws:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/*",
     ]

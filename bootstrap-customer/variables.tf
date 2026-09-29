@@ -4,7 +4,7 @@ variable "env_id" {
 }
 
 variable "backend_role_arn" {
-  description = "ARN of the fixed backend EC2 role trusted to assume these customer roles"
+  description = "ARN of the fixed backend EC2 role trusted by these customer roles and granted scoped sts:AssumeRole access"
   type        = string
   default     = "arn:aws:iam::285629514281:role/drift-reconciler-ec2-backend"
 }

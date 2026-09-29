@@ -312,3 +312,24 @@ resource "aws_iam_role_policy" "apply" {
   role   = aws_iam_role.apply.id
   policy = data.aws_iam_policy_document.apply_write.json
 }
+
+# The target roles trust the backend role, but STS also requires the caller's
+# identity policy to authorize AssumeRole. Scope that permission to this
+# environment's scan and apply roles only.
+data "aws_iam_policy_document" "backend_assume_customer_roles" {
+  statement {
+    sid     = "AssumeCustomerTerraformRoles"
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    resources = [
+      aws_iam_role.scan.arn,
+      aws_iam_role.apply.arn,
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "backend_assume_customer_roles" {
+  name   = "assume-customer-roles-${var.env_id}"
+  role   = element(reverse(split("/", var.backend_role_arn)), 0)
+  policy = data.aws_iam_policy_document.backend_assume_customer_roles.json
+}

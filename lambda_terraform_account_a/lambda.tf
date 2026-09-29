@@ -77,23 +77,6 @@ resource "aws_iam_role_policy" "lambda_logging" {
   })
 }
 
-resource "aws_lambda_function" "hello" {
-  function_name    = local.function_name
-  role             = aws_iam_role.lambda_execution.arn
-  handler          = "index.lambda_handler"
-  runtime          = "python3.12"
-  filename         = data.archive_file.lambda_package.output_path
-  source_code_hash = "az0V6XWDOLwOVGevwuvlTgslyrdEXu+K3qrFrToCXKk="
-  memory_size      = 128
-  timeout          = 10
-
-  tracing_config {
-    mode = "Active"
-  }
-
-  depends_on = [aws_iam_role_policy.lambda_logging]
-}
-
 output "lambda_function_name" {
   description = "Deployed Lambda function name."
   value       = aws_lambda_function.hello.function_name

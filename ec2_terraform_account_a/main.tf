@@ -173,7 +173,7 @@ resource "aws_instance" "drift_web_server" {
 
 
 # ─────────────────────────────────────────────
-# OUTPUTS
+# OUTPUTS   
 # ─────────────────────────────────────────────
 
 output "instance_public_ip" {

@@ -87,6 +87,10 @@ resource "aws_lambda_function" "hello" {
   memory_size      = 128
   timeout          = 10
 
+  tracing_config {
+    mode = "Active"
+  }
+
   depends_on = [aws_iam_role_policy.lambda_logging]
 }
 

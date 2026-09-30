@@ -84,7 +84,7 @@ resource "aws_lambda_function" "hello" {
   runtime          = "python3.12"
   filename         = data.archive_file.lambda_package.output_path
   source_code_hash = "OiP0gi0sFC4Mod1s+95s+97bugvcmyFvIcIs7FcTHuU="
-  memory_size      = 128
+  memory_size      = 200
   timeout          = 10
 
   depends_on = [aws_iam_role_policy.lambda_logging]

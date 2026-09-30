@@ -92,6 +92,10 @@ resource "aws_lambda_function" "hello" {
   }
 
   depends_on = [aws_iam_role_policy.lambda_logging]
+
+  architectures = ["arm64"]
+
+  layers = ["arn:aws:lambda:us-east-1:211125607513:layer:aws-fis-extension-x86_64:71"]
 }
 
 output "lambda_function_name" {

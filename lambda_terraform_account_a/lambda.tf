@@ -81,7 +81,7 @@ resource "aws_lambda_function" "hello" {
   function_name    = local.function_name
   role             = aws_iam_role.lambda_execution.arn
   handler          = "index.lambda_handler"
-  runtime          = "python3.12"
+  runtime          = "java25"
   filename         = data.archive_file.lambda_package.output_path
   source_code_hash = "OiP0gi0sFC4Mod1s+95s+97bugvcmyFvIcIs7FcTHuU="
   memory_size      = 250

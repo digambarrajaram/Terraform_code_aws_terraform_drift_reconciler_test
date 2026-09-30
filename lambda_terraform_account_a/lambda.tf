@@ -93,7 +93,7 @@ resource "aws_lambda_function" "hello" {
 
   depends_on = [aws_iam_role_policy.lambda_logging]
 
-  architectures = ["x86_64"]
+  architectures = ["arm64"]
 }
 
 output "lambda_function_name" {

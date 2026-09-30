@@ -84,7 +84,7 @@ resource "aws_lambda_function" "hello" {
   runtime          = "python3.12"
   filename         = data.archive_file.lambda_package.output_path
   source_code_hash = "OiP0gi0sFC4Mod1s+95s+97bugvcmyFvIcIs7FcTHuU="
-  memory_size      = 200
+  memory_size      = 250
   timeout          = 10
 
   tracing_config {

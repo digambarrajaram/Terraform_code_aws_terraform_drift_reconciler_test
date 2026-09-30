@@ -83,7 +83,7 @@ resource "aws_lambda_function" "hello" {
   handler          = "index.lambda_handler"
   runtime          = "python3.12"
   filename         = data.archive_file.lambda_package.output_path
-  source_code_hash = data.archive_file.lambda_package.output_base64sha256
+  source_code_hash = "OiP0gi0sFC4Mod1s+95s+97bugvcmyFvIcIs7FcTHuU="
   memory_size      = 128
   timeout          = 10
 

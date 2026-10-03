@@ -1,0 +1,21 @@
+{
+  "description": "Repository scope manifest. Sync the new row to the drift-reconciler application scope store when that application is available in this checkout.",
+  "scopes": [
+    {
+      "slug": "lambda",
+      "tf_dir": "infra-test/lambda",
+      "role_arn": "arn:aws:iam::285629514281:role/drift-reconciler-apply-Secondary_AWS_Account",
+      "backend_bucket": "sec-acc-tf-state-285629514281",
+      "backend_key": "lambda_scope_a/terraform.tfstate",
+      "region": "us-east-1"
+    },
+    {
+      "slug": "multi-f",
+      "tf_dir": "infra-test/multi-f",
+      "role_arn": "arn:aws:iam::285629514281:role/drift-reconciler-apply-MULTI",
+      "backend_bucket": "sec-acc-tf-state-285629514281",
+      "backend_key": "multi_f/terraform.tfstate",
+      "region": "us-east-1"
+    }
+  ]
+}

@@ -12,6 +12,10 @@ resource "aws_iam_user" "backend_identity" {
   }
 }
 
+locals {
+  multi_f_apply_role_arn = "arn:aws:iam::285629514281:role/drift-reconciler-apply-MULTI"
+}
+
 data "aws_iam_policy_document" "backend_identity" {
   statement {
     sid     = "AssumeTerraformRoles"
@@ -21,6 +25,13 @@ data "aws_iam_policy_document" "backend_identity" {
       aws_iam_role.scan.arn,
       aws_iam_role.apply.arn,
     ]
+  }
+
+  statement {
+    sid       = "AssumeMultiFApplyRole"
+    effect    = "Allow"
+    actions   = ["sts:AssumeRole"]
+    resources = [local.multi_f_apply_role_arn]
   }
 }
 

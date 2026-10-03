@@ -131,14 +131,21 @@ data "aws_iam_policy_document" "apply_write" {
     actions = [
       "ec2:CreateVpc",
       "ec2:DeleteVpc",
+      "ec2:ModifyVpcAttribute",
       "ec2:CreateSubnet",
       "ec2:DeleteSubnet",
+      "ec2:ModifySubnetAttribute",
       "ec2:CreateInternetGateway",
       "ec2:DeleteInternetGateway",
+      "ec2:AttachInternetGateway",
+      "ec2:DetachInternetGateway",
       "ec2:CreateRouteTable",
       "ec2:DeleteRouteTable",
       "ec2:CreateRoute",
       "ec2:DeleteRoute",
+      "ec2:ReplaceRoute",
+      "ec2:AssociateRouteTable",
+      "ec2:DisassociateRouteTable",
     ]
     resources = ["*"]
   }
@@ -159,6 +166,11 @@ data "aws_iam_policy_document" "apply_write" {
     sid    = "EC2InstanceWrite"
     effect = "Allow"
     actions = [
+      "ec2:RunInstances",
+      "ec2:TerminateInstances",
+      "ec2:StartInstances",
+      "ec2:StopInstances",
+      "ec2:ModifyInstanceAttribute",
       "ec2:CreateTags",
       "ec2:DeleteTags",
     ]
@@ -188,6 +200,17 @@ data "aws_iam_policy_document" "apply_write" {
       "lambda:DeleteFunction",
       "lambda:UpdateFunctionCode",
       "lambda:UpdateFunctionConfiguration",
+      "lambda:PublishVersion",
+      "lambda:AddPermission",
+      "lambda:RemovePermission",
+      "lambda:CreateAlias",
+      "lambda:UpdateAlias",
+      "lambda:DeleteAlias",
+      "lambda:PutFunctionConcurrency",
+      "lambda:DeleteFunctionConcurrency",
+      "lambda:PutFunctionEventInvokeConfig",
+      "lambda:UpdateFunctionEventInvokeConfig",
+      "lambda:DeleteFunctionEventInvokeConfig",
       "lambda:TagResource",
       "lambda:UntagResource",
     ]
@@ -212,15 +235,34 @@ data "aws_iam_policy_document" "apply_write" {
   }
 
   statement {
+    sid    = "LambdaLogStreamWrite"
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogStream",
+      "logs:DeleteLogStream",
+      "logs:PutLogEvents",
+    ]
+    resources = [
+      "arn:aws:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/*:log-stream:*",
+    ]
+  }
+
+  statement {
     sid    = "IAMWrite"
     effect = "Allow"
     actions = [
       "iam:CreateRole",
       "iam:DeleteRole",
+      "iam:GetRole",
+      "iam:UpdateRole",
+      "iam:UpdateAssumeRolePolicy",
       "iam:PutRolePolicy",
       "iam:DeleteRolePolicy",
+      "iam:GetRolePolicy",
+      "iam:ListRolePolicies",
       "iam:AttachRolePolicy",
       "iam:DetachRolePolicy",
+      "iam:ListAttachedRolePolicies",
       "iam:TagRole",
       "iam:UntagRole",
       "iam:PassRole",
@@ -235,7 +277,16 @@ data "aws_iam_policy_document" "apply_write" {
       "s3:CreateBucket",
       "s3:DeleteBucket",
       "s3:PutBucketPolicy",
+      "s3:DeleteBucketPolicy",
+      "s3:PutBucketPublicAccessBlock",
+      "s3:DeleteBucketPublicAccessBlock",
+      "s3:PutBucketVersioning",
+      "s3:PutEncryptionConfiguration",
+      "s3:DeleteEncryptionConfiguration",
       "s3:PutBucketTagging",
+      "s3:DeleteBucketTagging",
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
       "s3:PutObject",
       "s3:DeleteObject",
     ]
@@ -249,6 +300,8 @@ data "aws_iam_policy_document" "apply_write" {
       "dynamodb:CreateTable",
       "dynamodb:DeleteTable",
       "dynamodb:UpdateTable",
+      "dynamodb:UpdateTimeToLive",
+      "dynamodb:UpdateContinuousBackups",
       "dynamodb:TagResource",
       "dynamodb:UntagResource",
     ]
@@ -261,6 +314,7 @@ data "aws_iam_policy_document" "apply_write" {
     actions = [
       "sns:CreateTopic",
       "sns:DeleteTopic",
+      "sns:SetTopicAttributes",
       "sns:TagResource",
       "sns:UntagResource",
     ]
@@ -285,6 +339,7 @@ data "aws_iam_policy_document" "apply_write" {
     actions = [
       "s3:GetObject",
       "s3:PutObject",
+      "s3:DeleteObject",
       "s3:ListBucket",
     ]
     resources = [

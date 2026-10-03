@@ -98,6 +98,7 @@ data "aws_iam_policy_document" "scan_read" {
     actions = [
       "dynamodb:ListTables",
       "dynamodb:DescribeTable",
+      "dynamodb:ListTagsOfResource",
     ]
     resources = ["*"]
   }

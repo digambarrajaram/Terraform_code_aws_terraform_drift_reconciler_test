@@ -86,6 +86,10 @@ resource "aws_lambda_function" "this" {
     security_group_ids = [var.security_group_id]
   }
 
+  tracing_config {
+    mode = "Active"
+  }
+
   tags = merge(var.tags, { Name = "${var.name_prefix}-hello" })
 
   depends_on = [aws_iam_role_policy.execution]

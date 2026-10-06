@@ -61,6 +61,16 @@ data "aws_iam_policy_document" "apply_write" {
     resources = ["*"]
   }
 
+  statement {
+    sid       = "APIGatewayReadForPlan"
+    effect    = "Allow"
+    actions   = ["apigateway:GET"]
+    resources = [
+      "arn:aws:apigateway:${data.aws_region.current.region}::/apis",
+      "arn:aws:apigateway:${data.aws_region.current.region}::/apis/*",
+    ]
+  }
+
   # Terraform must discover log groups during refresh; AWS requires this
   # discovery action to use Resource = "*".
   statement {
@@ -218,6 +228,21 @@ data "aws_iam_policy_document" "apply_write" {
   }
 
   statement {
+    sid    = "APIGatewayWrite"
+    effect = "Allow"
+    actions = [
+      "apigateway:POST",
+      "apigateway:PUT",
+      "apigateway:PATCH",
+      "apigateway:DELETE",
+    ]
+    resources = [
+      "arn:aws:apigateway:${data.aws_region.current.region}::/apis",
+      "arn:aws:apigateway:${data.aws_region.current.region}::/apis/*",
+    ]
+  }
+
+  statement {
     sid    = "LambdaLogGroupWrite"
     effect = "Allow"
     actions = [
@@ -231,6 +256,23 @@ data "aws_iam_policy_document" "apply_write" {
     ]
     resources = [
       "arn:aws:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/*",
+    ]
+  }
+
+  statement {
+    sid    = "APIGatewayLogGroupWrite"
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:DeleteLogGroup",
+      "logs:PutRetentionPolicy",
+      "logs:DeleteRetentionPolicy",
+      "logs:ListTagsForResource",
+      "logs:TagResource",
+      "logs:UntagResource",
+    ]
+    resources = [
+      "arn:aws:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/apigateway/*",
     ]
   }
 

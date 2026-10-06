@@ -346,6 +346,48 @@ resource "aws_iam_role_policy" "apply_lambda" {
   policy = data.aws_iam_policy_document.apply_lambda.json
 }
 
+# ---- API Gateway and access-log permissions ----
+data "aws_iam_policy_document" "apply_apigateway" {
+  statement {
+    sid    = "ManagedHttpApiWrite"
+    effect = "Allow"
+    actions = [
+      "apigateway:GET",
+      "apigateway:POST",
+      "apigateway:PUT",
+      "apigateway:PATCH",
+      "apigateway:DELETE",
+    ]
+    resources = [
+      "arn:aws:apigateway:${var.aws_region}::/apis",
+      "arn:aws:apigateway:${var.aws_region}::/apis/*",
+    ]
+  }
+
+  statement {
+    sid    = "ManagedApiGatewayLogGroupWrite"
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:DeleteLogGroup",
+      "logs:PutRetentionPolicy",
+      "logs:DeleteRetentionPolicy",
+      "logs:ListTagsForResource",
+      "logs:TagResource",
+      "logs:UntagResource",
+    ]
+    resources = [
+      "arn:aws:logs:${var.aws_region}:*:log-group:/aws/apigateway/${var.managed_resource_prefix}*",
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "apply_apigateway" {
+  name   = "apigateway-write"
+  role   = aws_iam_role.apply.id
+  policy = data.aws_iam_policy_document.apply_apigateway.json
+}
+
 # ---- Terraform state access (write -- apply modifies remote state) ----
 data "aws_iam_policy_document" "apply_state_access" {
   statement {

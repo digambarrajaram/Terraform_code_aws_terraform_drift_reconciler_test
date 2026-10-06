@@ -165,6 +165,10 @@ data "aws_iam_policy_document" "apply_write" {
     effect = "Allow"
     actions = [
       "ec2:CreateSecurityGroup",
+      "ec2:AuthorizeSecurityGroupIngress",
+      "ec2:AuthorizeSecurityGroupEgress",
+      "ec2:RevokeSecurityGroupIngress",
+      "ec2:RevokeSecurityGroupEgress",
       "ec2:UpdateSecurityGroupRuleDescriptionsIngress",
       "ec2:UpdateSecurityGroupRuleDescriptionsEgress",
       "ec2:DeleteSecurityGroup",

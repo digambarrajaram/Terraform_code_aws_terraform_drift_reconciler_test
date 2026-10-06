@@ -26,3 +26,19 @@ registry; no AWS resources were destroyed as part of removing its configuration.
 **Remove the multi-f test stack when finished testing** to avoid hosted-zone and
 usage-based charges. The Lambda scope is also test infrastructure; remove it
 when no longer needed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

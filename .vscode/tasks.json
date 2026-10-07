@@ -1,0 +1,274 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Inspect multi-f Git state",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"-C",
+				"D:\\terraform_code",
+				"status",
+				"--short",
+				"--branch"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Inspect Terraform and AWS scope",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"git -C D:\\terraform_code remote -v && terraform -chdir=D:\\terraform_code\\infra-test\\multi-f workspace show && terraform -chdir=D:\\terraform_code\\infra-test\\multi-f state list && aws sts get-caller-identity --profile default --region us-east-1"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Plan multi-f destruction",
+			"type": "shell",
+			"command": "terraform",
+			"args": [
+				"-chdir=D:\\terraform_code\\infra-test\\multi-f",
+				"plan",
+				"-input=false",
+				"-destroy",
+				"-out=.destroy.tfplan"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Destroy plan multi-f state",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"terraform -chdir=D:\\terraform_code\\infra-test\\multi-f plan -input=false -destroy -out=D:\\terraform_code\\infra-test\\multi-f\\.destroy.tfplan"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Audit destroy plan resource actions",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"terraform -chdir=D:\\terraform_code\\infra-test\\multi-f show -json D:\\terraform_code\\infra-test\\multi-f\\.destroy.tfplan | python -c \"import json,sys; p=json.load(sys.stdin); [print(r['address'], r['change']['actions']) for r in p.get('resource_changes', [])]\""
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Check versioned bucket objects",
+			"type": "shell",
+			"command": "aws",
+			"args": [
+				"s3api",
+				"list-object-versions",
+				"--bucket",
+				"drift-reconciler-test-multi-f-285629514281",
+				"--profile",
+				"default",
+				"--region",
+				"us-east-1",
+				"--query",
+				"length(Versions[]) + length(DeleteMarkers[])",
+				"--output",
+				"text"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Inspect bucket version inventory",
+			"type": "shell",
+			"command": "aws",
+			"args": [
+				"s3api",
+				"list-object-versions",
+				"--bucket",
+				"drift-reconciler-test-multi-f-285629514281",
+				"--profile",
+				"default",
+				"--region",
+				"us-east-1",
+				"--output",
+				"json"
+			]
+		},
+		{
+			"label": "Apply multi-f destroy plan",
+			"type": "terraform",
+			"command": "terraform",
+			"args": [
+				"-chdir=D:\\terraform_code\\infra-test\\multi-f",
+				"apply",
+				"-input=false",
+				"-auto-approve",
+				"D:\\terraform_code\\infra-test\\multi-f\\.destroy.tfplan"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Apply authorized multi-f destroy",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"terraform -chdir=D:\\terraform_code\\infra-test\\multi-f apply -input=false -auto-approve D:\\terraform_code\\infra-test\\multi-f\\.destroy.tfplan"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Inspect deletion blockers",
+			"type": "shell",
+			"command": "aws",
+			"args": [
+				"ec2",
+				"describe-network-interfaces",
+				"--filters",
+				"Name=subnet-id,Values=subnet-011af7f39f24aa005,subnet-0f327e10e39db421c",
+				"--profile",
+				"default",
+				"--region",
+				"us-east-1",
+				"--query",
+				"NetworkInterfaces[].{Id:NetworkInterfaceId,Status:Status,Description:Description,RequesterManaged:RequesterManaged,Attachment:Attachment.InstanceId,Type:InterfaceType}",
+				"--output",
+				"json"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Inspect active subnet interfaces",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"aws ec2 describe-network-interfaces --filters Name=subnet-id,Values=subnet-011af7f39f24aa005,subnet-0f327e10e39db421c --profile default --region us-east-1 --query NetworkInterfaces[].NetworkInterfaceId --output text"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Detail active subnet interfaces",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"aws ec2 describe-network-interfaces --filters Name=subnet-id,Values=subnet-011af7f39f24aa005,subnet-0f327e10e39db421c --profile default --region us-east-1 --query NetworkInterfaces[].{id:NetworkInterfaceId,status:Status,desc:Description,requester:RequesterManaged,owner:RequesterId,attachment:Attachment.AttachmentId,type:InterfaceType} --output json"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Recheck Lambda network interfaces",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"aws ec2 describe-network-interfaces --no-cli-pager --filters Name=subnet-id,Values=subnet-011af7f39f24aa005,subnet-0f327e10e39db421c --profile default --region us-east-1 --query NetworkInterfaces[].{id:NetworkInterfaceId,status:Status,desc:Description,type:InterfaceType} --output json"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Fetch branch before push",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"git -C D:\\terraform_code fetch origin && git -C D:\\terraform_code status --short --branch && git -C D:\\terraform_code rev-list --left-right --count origin/main...HEAD && git -C D:\\terraform_code log --oneline --left-right origin/main...HEAD"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Review fetched multi-f changes",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"git -C D:\\terraform_code diff --stat HEAD..origin/main -- infra-test/multi-f && git -C D:\\terraform_code diff --name-status HEAD..origin/main -- infra-test/multi-f"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Inspect remote multi-f diffs",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"git -C D:\\terraform_code diff HEAD..origin/main -- infra-test/multi-f/modules/app/main.tf infra-test/multi-f/modules/test-support/main.tf"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Inspect remote support diff",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"git -C D:\\terraform_code diff HEAD..origin/main -- infra-test/multi-f/modules/test-support/main.tf"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Clean destroy plan artifact",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"del D:\\terraform_code\\infra-test\\multi-f\\.destroy.tfplan && git -C D:\\terraform_code status --short --branch"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Fast-forward current branch",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"-C",
+				"D:\\terraform_code",
+				"merge",
+				"--ff-only",
+				"origin/main"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Plan multi-f recreation",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"terraform -chdir=D:\\terraform_code\\infra-test\\multi-f plan -input=false -out=D:\\terraform_code\\infra-test\\multi-f\\.apply.tfplan"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Apply multi-f recreation plan",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"terraform -chdir=D:\\terraform_code\\infra-test\\multi-f apply -input=false -auto-approve D:\\terraform_code\\infra-test\\multi-f\\.apply.tfplan"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		}
+	]
+}

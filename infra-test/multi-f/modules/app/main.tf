@@ -75,6 +75,10 @@ resource "aws_lambda_function" "this" {
   architectures                  = ["arm64"]
   reserved_concurrent_executions = -1
 
+  tracing_config {
+    mode = "Active"
+  }
+
   environment {
     variables = {
       BUCKET_NAME = var.bucket_name

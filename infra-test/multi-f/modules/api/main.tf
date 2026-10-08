@@ -91,6 +91,6 @@ resource "aws_lambda_permission" "api_gateway" {
   action        = "lambda:InvokeFunction"
   function_name = var.lambda_function_name
   qualifier     = var.lambda_alias_name
-  principal     = "*"
-  source_arn    = "*"
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.this.execution_arn}/*/*/*"
 }

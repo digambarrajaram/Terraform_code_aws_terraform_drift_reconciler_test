@@ -17,30 +17,33 @@ locals {
   })
 }
 
+resource "aws_kms_key" "logs" {
+  description             = "KMS key for API access logs"
+  deletion_window_in_days = 7
+  enable_key_rotation     = false
+}
+
 resource "aws_cloudwatch_log_group" "access" {
   name              = "/aws/apigateway/${var.name_prefix}"
   retention_in_days = 14
+  kms_key_id        = aws_kms_key.logs.arn
   tags              = merge(var.tags, { Name = "${var.name_prefix}-api-access" })
 }
 
 resource "aws_apigatewayv2_api" "this" {
   name                         = "${var.name_prefix}-http-api"
   protocol_type                = "HTTP"
-  disable_execute_api_endpoint = var.disable_execute_api_endpoint
+  disable_execute_api_endpoint = false
 
   dynamic "cors_configuration" {
-    for_each = length(var.allowed_origins) > 0 ? [true] : []
+    for_each = [true]
     content {
-      allow_origins = var.allowed_origins
-      allow_methods = ["GET", "PUT", "OPTIONS"]
-      allow_headers = [
-        "authorization",
-        "content-type",
-        "x-amz-date",
-        "x-amz-security-token",
-        "x-amz-content-sha256",
-      ]
-      max_age = 300
+      allow_credentials = true
+      allow_origins     = ["*"]
+      allow_methods     = ["*"]
+      allow_headers     = ["*"]
+      expose_headers    = ["*"]
+      max_age           = 0
     }
   }
 
@@ -88,6 +91,6 @@ resource "aws_lambda_permission" "api_gateway" {
   action        = "lambda:InvokeFunction"
   function_name = var.lambda_function_name
   qualifier     = var.lambda_alias_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.this.execution_arn}/*/*"
+  principal     = "*"
+  source_arn    = "*"
 }

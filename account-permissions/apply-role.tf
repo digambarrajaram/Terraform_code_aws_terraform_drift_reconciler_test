@@ -388,6 +388,53 @@ resource "aws_iam_role_policy" "apply_apigateway" {
   policy = data.aws_iam_policy_document.apply_apigateway.json
 }
 
+# ---- KMS key permissions ----
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_policy_document" "apply_kms" {
+  # KMS keys do not have name-based ARNs. Scope access to keys in this account
+  # and region; CreateKey must use Resource = "*" because the key ARN does not
+  # exist until after creation.
+  statement {
+    sid       = "CreateManagedKmsKeys"
+    effect    = "Allow"
+    actions   = ["kms:CreateKey"]
+    resources = ["*"]
+
+    condition {
+      test     = "StringLike"
+      variable = "aws:RequestTag/Name"
+      values   = ["${var.managed_resource_prefix}*"]
+    }
+  }
+
+  statement {
+    sid    = "ManageRegionalKmsKeys"
+    effect = "Allow"
+    actions = [
+      "kms:CancelKeyDeletion",
+      "kms:DescribeKey",
+      "kms:DisableKeyRotation",
+      "kms:EnableKeyRotation",
+      "kms:GetKeyPolicy",
+      "kms:GetKeyRotationStatus",
+      "kms:ListResourceTags",
+      "kms:PutKeyPolicy",
+      "kms:ScheduleKeyDeletion",
+      "kms:TagResource",
+      "kms:UntagResource",
+      "kms:UpdateKeyDescription",
+    ]
+    resources = ["arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:key/*"]
+  }
+}
+
+resource "aws_iam_role_policy" "apply_kms" {
+  name   = "kms-key-management"
+  role   = aws_iam_role.apply.id
+  policy = data.aws_iam_policy_document.apply_kms.json
+}
+
 # ---- Terraform state access (write -- apply modifies remote state) ----
 data "aws_iam_policy_document" "apply_state_access" {
   statement {

@@ -1,3 +1,7 @@
+data "aws_caller_identity" "current" {}
+data "aws_partition" "current" {}
+data "aws_region" "current" {}
+
 locals {
   routes = toset([
     "GET /health",
@@ -15,12 +19,49 @@ locals {
     responseLength = "$context.responseLength"
     integrationErr = "$context.integrationErrorMessage"
   })
+
+  access_log_group_arn = "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/apigateway/${var.name_prefix}"
 }
 
 resource "aws_kms_key" "logs" {
   description             = "KMS key for API access logs"
   deletion_window_in_days = 7
   enable_key_rotation     = false
+  tags                    = merge(var.tags, { Name = "${var.name_prefix}-api-logs" })
+}
+
+resource "aws_kms_key_policy" "logs" {
+  key_id = aws_kms_key.logs.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "EnableAccountKeyAdministration"
+        Effect    = "Allow"
+        Principal = { AWS = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:root" }
+        Action    = "kms:*"
+        Resource  = "*"
+      },
+      {
+        Sid       = "AllowCloudWatchLogsUseOfKey"
+        Effect    = "Allow"
+        Principal = { Service = "logs.${data.aws_region.current.region}.${data.aws_partition.current.dns_suffix}" }
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:Describe*",
+        ]
+        Resource = "*"
+        Condition = {
+          ArnEquals = {
+            "kms:EncryptionContext:aws:logs:arn" = local.access_log_group_arn
+          }
+        }
+      },
+    ]
+  })
 }
 
 resource "aws_cloudwatch_log_group" "access" {
@@ -28,6 +69,8 @@ resource "aws_cloudwatch_log_group" "access" {
   retention_in_days = 14
   kms_key_id        = aws_kms_key.logs.arn
   tags              = merge(var.tags, { Name = "${var.name_prefix}-api-access" })
+
+  depends_on = [aws_kms_key_policy.logs]
 }
 
 resource "aws_apigatewayv2_api" "this" {
@@ -36,10 +79,10 @@ resource "aws_apigatewayv2_api" "this" {
   disable_execute_api_endpoint = false
 
   dynamic "cors_configuration" {
-    for_each = [true]
+    for_each = length(var.allowed_origins) > 0 ? [true] : []
     content {
-      allow_credentials = true
-      allow_origins     = ["*"]
+      allow_credentials = false
+      allow_origins     = var.allowed_origins
       allow_methods     = ["*"]
       allow_headers     = ["*"]
       expose_headers    = ["*"]

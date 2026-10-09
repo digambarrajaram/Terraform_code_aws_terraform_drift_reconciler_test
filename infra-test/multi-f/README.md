@@ -11,8 +11,9 @@ This Terraform root composes focused modules under `modules/`:
 	shared account concurrency (no reserved allocation), log retention,
 	published version, and stable `live` alias. API Gateway throttling limits
 	request rates without consuming the account's reserved-concurrency budget.
-- `api`: HTTP API with IAM/SigV4 authorization, throttling, access logs, and
-	Lambda alias integration.
+- `api`: HTTP API with IAM/SigV4 authorization, throttling, KMS-encrypted
+	access logs, and Lambda alias integration. CORS is enabled only when
+	`allowed_origins` contains explicit origins.
 - `dns`: Route 53 public hosted zone, plus optional ACM certificate, API
 	Gateway custom domain, and DNS aliases after domain delegation.
 - `test-support`: the original on-demand DynamoDB table and SNS topic.

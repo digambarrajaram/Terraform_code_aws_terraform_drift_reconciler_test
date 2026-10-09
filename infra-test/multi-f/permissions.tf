@@ -70,7 +70,8 @@ data "aws_iam_policy_document" "multi_f_apply" {
     actions = [
       "ec2:DescribeVpcs", "ec2:DescribeVpcAttribute", "ec2:DescribeSubnets",
       "ec2:DescribeRouteTables", "ec2:DescribeVpcEndpoints", "ec2:DescribePrefixLists",
-      "ec2:DescribeSecurityGroups", "ec2:DescribeTags", "ec2:DescribeAvailabilityZones",
+      "ec2:DescribeSecurityGroups", "ec2:DescribeSecurityGroupRules",
+      "ec2:DescribeTags", "ec2:DescribeAvailabilityZones",
     ]
     resources = ["*"]
   }
@@ -141,6 +142,7 @@ data "aws_iam_policy_document" "multi_f_apply" {
       "logs:CreateLogGroup", "logs:DeleteLogGroup", "logs:PutRetentionPolicy",
       "logs:DeleteRetentionPolicy", "logs:TagResource", "logs:UntagResource",
       "logs:ListTagsForResource", "logs:DescribeLogGroups",
+      "logs:AssociateKmsKey", "logs:DisassociateKmsKey",
     ]
     resources = [
       "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.name_prefix}-hello",
@@ -148,6 +150,49 @@ data "aws_iam_policy_document" "multi_f_apply" {
       "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/apigateway/${local.name_prefix}",
       "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/apigateway/${local.name_prefix}:*",
     ]
+  }
+
+  statement {
+    sid       = "CreateTaggedScopeLogsKey"
+    effect    = "Allow"
+    actions   = ["kms:CreateKey"]
+    resources = ["*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/Project"
+      values   = [local.common_tags.Project]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/Scope"
+      values   = [local.common_tags.Scope]
+    }
+  }
+
+  statement {
+    sid    = "ManageTaggedScopeLogsKey"
+    effect = "Allow"
+    actions = [
+      "kms:CancelKeyDeletion", "kms:DescribeKey", "kms:DisableKeyRotation",
+      "kms:EnableKeyRotation", "kms:GetKeyPolicy", "kms:GetKeyRotationStatus",
+      "kms:ListResourceTags", "kms:PutKeyPolicy", "kms:ScheduleKeyDeletion",
+      "kms:TagResource", "kms:UntagResource", "kms:UpdateKeyDescription",
+    ]
+    resources = ["arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:key/*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/Project"
+      values   = [local.common_tags.Project]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/Scope"
+      values   = [local.common_tags.Scope]
+    }
   }
 
   statement {

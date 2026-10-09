@@ -92,5 +92,5 @@ resource "aws_lambda_permission" "api_gateway" {
   function_name = var.lambda_function_name
   qualifier     = var.lambda_alias_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.this.execution_arn}/*/*/*"
+  source_arn    = "${aws_apigatewayv2_api.this.execution_arn}/*/*"
 }

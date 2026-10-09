@@ -1,7 +1,6 @@
 {
 	"version": "2.0.0",
 	"tasks": [
-		{
 			"label": "Inspect multi-f Git state",
 			"type": "shell",
 			"command": "git",
@@ -266,6 +265,19 @@
 			"args": [
 				"/c",
 				"terraform -chdir=D:\\terraform_code\\infra-test\\multi-f apply -input=false -auto-approve D:\\terraform_code\\infra-test\\multi-f\\.apply.tfplan"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Show saved multi-f apply plan",
+			"type": "shell",
+			"command": "terraform",
+			"args": [
+				"-chdir=D:\\terraform_code\\infra-test\\multi-f",
+				"show",
+				"-json",
+				"D:\\terraform_code\\infra-test\\multi-f\\.apply.tfplan"
 			],
 			"isBackground": false,
 			"problemMatcher": []

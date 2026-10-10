@@ -78,7 +78,6 @@ resource "aws_security_group" "lambda" {
   name        = "${var.name_prefix}-lambda"
   description = "Lambda egress restricted to the private S3 gateway endpoint."
   vpc_id      = aws_vpc.this.id
-  egress      = []
 
   tags = merge(var.tags, { Name = "${var.name_prefix}-lambda-sg" })
 }

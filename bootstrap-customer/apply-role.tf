@@ -62,9 +62,9 @@ data "aws_iam_policy_document" "apply_write" {
   }
 
   statement {
-    sid       = "APIGatewayReadForPlan"
-    effect    = "Allow"
-    actions   = ["apigateway:GET"]
+    sid     = "APIGatewayReadForPlan"
+    effect  = "Allow"
+    actions = ["apigateway:GET"]
     resources = [
       "arn:aws:apigateway:${data.aws_region.current.region}::/apis",
       "arn:aws:apigateway:${data.aws_region.current.region}::/apis/*",
@@ -132,6 +132,36 @@ data "aws_iam_policy_document" "apply_write" {
       "sqs:Get*",
       "sqs:List*",
     ]
+    resources = ["*"]
+  }
+
+  # KMS key refresh and lifecycle permissions for managed infrastructure.
+  statement {
+    sid    = "KMSKeyManagement"
+    effect = "Allow"
+    actions = [
+      "kms:CancelKeyDeletion",
+      "kms:DescribeKey",
+      "kms:DisableKeyRotation",
+      "kms:EnableKeyRotation",
+      "kms:GetKeyPolicy",
+      "kms:GetKeyRotationStatus",
+      "kms:ListResourceTags",
+      "kms:PutKeyPolicy",
+      "kms:ScheduleKeyDeletion",
+      "kms:TagResource",
+      "kms:UntagResource",
+      "kms:UpdateKeyDescription",
+    ]
+    resources = ["arn:aws:kms:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:key/*"]
+  }
+
+  # KMS requires Resource = "*" when creating a key because its ARN does not
+  # exist until after creation.
+  statement {
+    sid       = "CreateKMSKey"
+    effect    = "Allow"
+    actions   = ["kms:CreateKey"]
     resources = ["*"]
   }
 

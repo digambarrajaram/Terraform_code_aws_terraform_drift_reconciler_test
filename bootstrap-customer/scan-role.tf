@@ -35,6 +35,18 @@ data "aws_iam_policy_document" "scan_read" {
   }
 
   statement {
+    sid    = "KMSKeyRead"
+    effect = "Allow"
+    actions = [
+      "kms:DescribeKey",
+      "kms:GetKeyPolicy",
+      "kms:GetKeyRotationStatus",
+      "kms:ListResourceTags",
+    ]
+    resources = ["arn:aws:kms:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:key/*"]
+  }
+
+  statement {
     sid    = "RDSRead"
     effect = "Allow"
     actions = [

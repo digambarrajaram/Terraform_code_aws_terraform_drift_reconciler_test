@@ -60,6 +60,7 @@ data "aws_iam_policy_document" "scan_read" {
     actions   = ["ec2:Describe*"]
     resources = ["*"]
   }
+
 }
 
 resource "aws_iam_role_policy" "scan_read" {

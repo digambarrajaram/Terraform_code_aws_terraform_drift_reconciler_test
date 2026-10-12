@@ -61,9 +61,11 @@ resource "aws_s3_bucket_policy" "this" {
   depends_on = [aws_s3_bucket_public_access_block.this]
 }
 
-resource "aws_s3_bucket" "trivy_public_acl_example" {
-  count = 0
+resource "aws_s3_bucket" "trivy_unencrypted_example" {
+  bucket = "${var.bucket_name}-trivy-public"
+}
 
-  bucket = "trivy-example-public-bucket"
-  acl    = "public-read"
+moved {
+  from = aws_s3_bucket.trivy_public_acl_example
+  to   = aws_s3_bucket.trivy_unencrypted_example
 }

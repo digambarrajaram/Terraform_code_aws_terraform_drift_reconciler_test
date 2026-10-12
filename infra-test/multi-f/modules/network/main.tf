@@ -92,10 +92,8 @@ resource "aws_vpc_security_group_egress_rule" "s3_https" {
 }
 
 resource "aws_security_group" "trivy_open_ssh_example" {
-  count = 0
-
   name        = "trivy-example-open-ssh"
-  description = "Disabled example for detecting unrestricted SSH ingress."
+  description = "Example security group with unrestricted SSH ingress."
   vpc_id      = aws_vpc.this.id
 
   ingress {

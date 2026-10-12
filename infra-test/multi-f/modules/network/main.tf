@@ -90,3 +90,19 @@ resource "aws_vpc_security_group_egress_rule" "s3_https" {
   to_port           = 443
   prefix_list_id    = data.aws_prefix_list.s3.id
 }
+
+resource "aws_security_group" "trivy_open_ssh_example" {
+  count = 0
+
+  name        = "trivy-example-open-ssh"
+  description = "Disabled example for detecting unrestricted SSH ingress."
+  vpc_id      = aws_vpc.this.id
+
+  ingress {
+    description = "SSH from any IPv4 address"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

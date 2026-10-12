@@ -60,3 +60,10 @@ resource "aws_s3_bucket_policy" "this" {
 
   depends_on = [aws_s3_bucket_public_access_block.this]
 }
+
+resource "aws_s3_bucket" "trivy_public_acl_example" {
+  count = 0
+
+  bucket = "trivy-example-public-bucket"
+  acl    = "public-read"
+}

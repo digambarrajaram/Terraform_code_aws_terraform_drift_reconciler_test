@@ -6,7 +6,10 @@ This Terraform root composes focused modules under `modules/`:
 	Lambda security group, and an S3 gateway endpoint. There is no NAT gateway
 	or paid interface endpoint.
 - `storage`: private, versioned, AES-256-encrypted S3 bucket with public access
-	blocked and TLS-only bucket policy.
+	blocked and TLS-only bucket policy, plus isolated Trivy fixtures for
+	unencrypted storage and missing bucket versioning. The missing-versioning
+	fixture has encryption and public-access protections configured so versioning
+	is its intended finding.
 - `app`: Python Lambda in the private subnets, least-privilege S3 access,
 	shared account concurrency (no reserved allocation), log retention,
 	published version, and stable `live` alias. API Gateway throttling limits

@@ -6,10 +6,11 @@ This Terraform root composes focused modules under `modules/`:
 	Lambda security group, and an S3 gateway endpoint. There is no NAT gateway
 	or paid interface endpoint.
 - `storage`: private, versioned, AES-256-encrypted S3 bucket with public access
-	blocked and TLS-only bucket policy, plus isolated Trivy fixtures for
-	unencrypted storage and missing bucket versioning. The missing-versioning
-	fixture has encryption and public-access protections configured so versioning
-	is its intended finding.
+	blocked and TLS-only bucket policy, plus an isolated unencrypted-bucket
+	Trivy fixture.
+- `trivy-e2e.tf`: standalone ECR repository fixture with mutable image tags.
+	Trivy can remediate its image-tag-mutability finding by changing one attribute
+	on the same resource; image scanning is enabled to avoid an unrelated finding.
 - `app`: Python Lambda in the private subnets, least-privilege S3 access,
 	shared account concurrency (no reserved allocation), log retention,
 	published version, and stable `live` alias. API Gateway throttling limits

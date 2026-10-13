@@ -65,36 +65,6 @@ resource "aws_s3_bucket" "trivy_unencrypted_example" {
   bucket = "${var.bucket_name}-trivy-public"
 }
 
-resource "aws_s3_bucket" "trivy_missing_versioning_example" {
-  bucket = "${var.bucket_name}-trivy-versioning"
-}
-
-resource "aws_s3_bucket_ownership_controls" "trivy_missing_versioning_example" {
-  bucket = aws_s3_bucket.trivy_missing_versioning_example.id
-
-  rule {
-    object_ownership = "BucketOwnerEnforced"
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "trivy_missing_versioning_example" {
-  bucket                  = aws_s3_bucket.trivy_missing_versioning_example.id
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "trivy_missing_versioning_example" {
-  bucket = aws_s3_bucket.trivy_missing_versioning_example.id
-
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
-
 moved {
   from = aws_s3_bucket.trivy_public_acl_example
   to   = aws_s3_bucket.trivy_unencrypted_example

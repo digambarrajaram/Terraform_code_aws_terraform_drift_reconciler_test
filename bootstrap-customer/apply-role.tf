@@ -125,6 +125,16 @@ data "aws_iam_policy_document" "apply_write" {
   }
 
   statement {
+    sid    = "ECRReadForPlan"
+    effect = "Allow"
+    actions = [
+      "ecr:DescribeRepositories",
+      "ecr:ListTagsForResource",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
     sid    = "SQSReadForPlan"
     effect = "Allow"
     actions = [
@@ -405,6 +415,20 @@ data "aws_iam_policy_document" "apply_write" {
       "sqs:DeleteQueue",
       "sqs:TagQueue",
       "sqs:UntagQueue",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "ECRRepositoryWrite"
+    effect = "Allow"
+    actions = [
+      "ecr:CreateRepository",
+      "ecr:DeleteRepository",
+      "ecr:PutImageTagMutability",
+      "ecr:PutImageScanningConfiguration",
+      "ecr:TagResource",
+      "ecr:UntagResource",
     ]
     resources = ["*"]
   }

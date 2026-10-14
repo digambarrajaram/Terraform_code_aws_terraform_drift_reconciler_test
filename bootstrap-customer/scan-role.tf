@@ -136,6 +136,16 @@ data "aws_iam_policy_document" "scan_read" {
   }
 
   statement {
+    sid    = "ECRRead"
+    effect = "Allow"
+    actions = [
+      "ecr:DescribeRepositories",
+      "ecr:ListTagsForResource",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
     sid    = "StateBucketAccess"
     effect = "Allow"
     actions = [

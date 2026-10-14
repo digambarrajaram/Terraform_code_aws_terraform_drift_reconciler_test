@@ -4,6 +4,7 @@ Each scope below is an independent Terraform root with its own configuration,
 role, and remote state key. They share only this routing manifest and preflight
 script; do not combine their state.
 
+
 | Scope | Configuration | Resources | Remote state key | Approximate cost |
 | --- | --- | --- | --- | --- |
 | Lambda | `lambda/` | Small Python Lambda function, execution role/policy, and a CloudWatch log group (14-day retention). | `lambda_scope_a/terraform.tfstate` | Near **$0/month** at low request volume; requests, duration, and logs are usage-based. |

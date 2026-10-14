@@ -68,7 +68,7 @@ resource "aws_lambda_function" "this" {
   handler                        = "handler.lambda_handler"
   runtime                        = "python3.12"
   filename                       = data.archive_file.lambda_package.output_path
-  source_code_hash               = data.archive_file.lambda_package.output_base64sha256
+  source_code_hash               = "uEUWUGpE180wyZGkPp1vGts+lBBk/NHDQu8UI9V8edA="
   memory_size                    = 128
   timeout                        = 10
   publish                        = true
@@ -93,11 +93,13 @@ resource "aws_lambda_function" "this" {
   tags = merge(var.tags, { Name = "${var.name_prefix}-hello" })
 
   depends_on = [aws_iam_role_policy.execution]
+
+  version = "13"
 }
 
 resource "aws_lambda_alias" "live" {
   name             = "live"
   description      = "Stable production-style alias for API Gateway integration."
   function_name    = aws_lambda_function.this.function_name
-  function_version = aws_lambda_function.this.version
+  function_version = "13"
 }

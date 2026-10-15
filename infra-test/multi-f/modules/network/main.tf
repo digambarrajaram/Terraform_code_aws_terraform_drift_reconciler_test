@@ -25,7 +25,7 @@ resource "aws_subnet" "private" {
   vpc_id                  = aws_vpc.this.id
   cidr_block              = each.value
   availability_zone       = local.availability_zones[index(local.subnet_keys, each.key)]
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = merge(var.tags, {
     Name = each.key == "a" ? "${var.name_prefix}-private-subnet" : "${var.name_prefix}-private-subnet-${each.key}"

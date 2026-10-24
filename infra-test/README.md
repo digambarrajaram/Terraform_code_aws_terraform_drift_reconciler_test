@@ -1,45 +1,53 @@
 # Infrastructure test scopes
 
-Each scope below is an independent Terraform root with its own configuration,
-role, and remote state key. They share only this routing manifest and preflight
-script; do not combine their state.
+Each directory listed below is an independent Terraform root with its own
+resources and remote state key. Never run Terraform from this directory to
+manage a child scope, and do not combine state between scopes.
 
+## Available scopes
 
-| Scope | Configuration | Resources | Remote state key | Approximate cost |
-| --- | --- | --- | --- | --- |
-| Lambda | `lambda/` | Small Python Lambda function, execution role/policy, and a CloudWatch log group (14-day retention). | `lambda_scope_a/terraform.tfstate` | Near **$0/month** at low request volume; requests, duration, and logs are usage-based. |
-| Multi-f | `multi-f/` | Private VPC subnets in two AZs, S3 gateway endpoint, encrypted/versioned private S3, VPC-attached Lambda, IAM-authorized HTTP API, optional Route 53/ACM custom domain, and retained DynamoDB/SNS test-support resources. | `multi_f/terraform.tfstate` | No NAT or interface endpoint charges. Lambda/API/S3/log usage is metered; the Route 53 public hosted zone costs about **$0.50/month**, plus domain registration if needed. |
+| Scope | Directory | State key | Summary |
+| --- | --- | --- | --- |
+| Lambda | [`lambda/`](./lambda/) | `lambda_scope_a/terraform.tfstate` | Minimal Python Lambda deployment, execution role, and 14-day CloudWatch log group. |
+| Multi-f | [`multi-f/`](./multi-f/) | `multi_f/terraform.tfstate` | Private-network Lambda and S3-backed API, HTTP API with IAM authorization, optional custom domain, and test-support resources. |
 
-Free Tier allowances depend on account age, plan, region, and current AWS pricing;
-they are not a guarantee of zero cost. S3 versioning retains prior object versions,
-so remove test objects and destroy the stack when finished. A Route 53 hosted zone
-is created and billed only after you configure a domain name.
+The active backend bucket and region are listed in [`scope-registry.json`](./scope-registry.json).
+Its role ARNs, bucket names, state keys, and regions are deployment-specific:
+verify them against the intended AWS account before use.
 
-Run `./check_scopes.ps1` from this directory to verify each manifest path and
-backend configuration before using a scope. `scope-registry.json` routes all
-three scopes; its role ARNs, backend buckets, backend keys, and region values
-remain specific to each scope.
+## Preflight check
 
-The standalone EC2 test scope has been retired. Its remote state key
-(`ec2_scope_a/terraform.tfstate`) is intentionally no longer routed by this
-registry; no AWS resources were destroyed as part of removing its configuration.
+Run the scope registry check before operating a scope:
 
-**Remove the multi-f test stack when finished testing** to avoid hosted-zone and
-usage-based charges. The Lambda scope is also test infrastructure; remove it
-when no longer needed.
+```powershell
+.\check_scopes.ps1
+```
 
+The script verifies each registered directory and compares its backend bucket,
+key, and region with the Terraform backend configuration. It does not check AWS
+credentials, role access, or cloud resource health.
 
+## Run a scope
 
+Change to the scope's directory, then run `terraform init`, `terraform
+validate`, `terraform plan`, and `terraform apply`. Inspect the plan and confirm
+the AWS account and role before applying. Use Terraform 1.10 or later because
+the S3 backend uses lockfiles.
 
+When testing is complete, run `terraform destroy` from that same scope directory
+after reviewing the plan. The Lambda and multi-f scopes can incur usage-based
+charges. `multi-f` avoids NAT and interface endpoint hourly charges, but an
+optional Route 53 public hosted zone is billed after a domain is configured;
+domain registration may cost extra. Current AWS prices and Free Tier eligibility
+vary.
 
+S3 versioning retains previous object versions; clean up test objects and
+consider retained versions when estimating storage costs.
 
+## Retired scope
 
-
-
-
-
-
-
-
+The standalone EC2 test scope is no longer present in the registry or
+configuration. Its previous remote state key, `ec2_scope_a/terraform.tfstate`,
+is not managed or deleted by the current scope configuration.
 
 

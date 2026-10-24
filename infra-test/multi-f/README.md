@@ -1,63 +1,98 @@
 # `multi-f` modular serverless test stack
 
-This Terraform root composes focused modules under `modules/`:
+This independent Terraform root deploys a private-network Lambda and an
+IAM-authorized HTTP API, with optional DNS/custom-domain resources. Terraform
+modules are under `modules/`.
 
-- `network`: VPC, two private subnets in separate AZs, isolated route tables,
-	Lambda security group, and an S3 gateway endpoint. There is no NAT gateway
-	or paid interface endpoint.
+## Components
+
+- `network`: VPC, two private subnets in separate Availability Zones, isolated
+  route tables, Lambda security group, and an S3 gateway endpoint. There is no
+  NAT gateway or paid interface endpoint.
 - `storage`: private, versioned, AES-256-encrypted S3 bucket with public access
-	blocked and TLS-only bucket policy, plus an isolated unencrypted-bucket
-	Trivy fixture.
-- `trivy-e2e.tf`: standalone ECR repository fixture with mutable image tags.
-	Trivy can remediate its image-tag-mutability finding by changing one attribute
-	on the same resource; image scanning is enabled to avoid an unrelated finding.
-- `app`: Python Lambda in the private subnets, least-privilege S3 access,
-	shared account concurrency (no reserved allocation), log retention,
-	published version, and stable `live` alias. API Gateway throttling limits
-	request rates without consuming the account's reserved-concurrency budget.
-- `api`: HTTP API with IAM/SigV4 authorization, throttling, KMS-encrypted
-	access logs, and Lambda alias integration. CORS is enabled only when
-	`allowed_origins` contains explicit origins.
-- `dns`: Route 53 public hosted zone, plus optional ACM certificate, API
-	Gateway custom domain, and DNS aliases after domain delegation.
-- `test-support`: the original on-demand DynamoDB table and SNS topic.
+  blocked and a TLS-only bucket policy.
+- `app`: Python Lambda in the private subnets with scoped S3 access, log
+  retention, a published version, and a stable `live` alias.
+- `api`: HTTP API with IAM/SigV4 authorization, throttling, access logging, and
+  Lambda alias integration. CORS is enabled only when `allowed_origins` is
+  explicitly configured.
+- `dns`: optional Route 53 public hosted zone, ACM certificate, API custom
+  domain, and DNS aliases.
+- `test-support`: DynamoDB table and SNS topic retained for testing.
+- `trivy-e2e.tf`: ECR repository fixture for testing image-tag mutability
+  remediation.
 
-The Lambda exposes `GET /health`, `PUT /objects/{key}`, and
-`GET /objects/{key}`. HTTP API routes require AWS IAM authorization; callers
-must sign requests with SigV4. The API Gateway endpoint is disabled when the
-custom domain is enabled.
+The Lambda supports `GET /health`, `PUT /objects/{key}`, and
+`GET /objects/{key}`. API routes require AWS IAM authorization; callers must
+sign requests with SigV4. When the custom domain is enabled, the default
+API Gateway endpoint is disabled.
 
-## Provisioning sequence
+## State and inputs
 
-The scope uses `multi_f/terraform.tfstate`, independent of the Lambda scope.
-Run `./check_scopes.ps1` from `infra-test/` first. `domain_name` defaults to
-blank, so you can provision the API without owning a domain.
+The S3 backend uses key `multi_f/terraform.tfstate` and is independent of the
+Lambda scope. It uses S3 backend lockfiles, so Terraform 1.10 or later is
+required. The main inputs are:
 
-With a blank domain and the default `enable_custom_domain=false`, the DNS module
-creates no hosted zone or certificate. The IAM-authorized regional API endpoint
-is still available through `terraform output api_url`.
+| Variable | Purpose | Default |
+| --- | --- | --- |
+| `aws_region` | Region for the stack. | `us-east-1` |
+| `domain_name` | Optional registered DNS domain; blank disables DNS resources. | `""` |
+| `api_subdomain_label` | Label used for the API custom hostname. | `api` |
+| `enable_custom_domain` | Enables the custom domain after DNS delegation. | `false` |
+| `allowed_origins` | Explicit browser origins allowed by CORS. | `[]` |
+| `vpc_cidr` | VPC address range. | `10.46.0.0/16` |
+| `private_subnet_cidrs` | Two private subnet ranges (`a` and `b`). | `10.46.2.0/24`, `10.46.3.0/24` |
+| `api_throttling_burst_limit` | Per-route request burst limit. | `20` |
+| `api_throttling_rate_limit` | Per-route steady request rate. | `10` requests/second |
 
-When you later own a registered domain, first apply with
-`-var domain_name="example.com"` and `-var enable_custom_domain=false`. Read
-`route53_name_servers` and delegate them at the registrar. After delegation
-propagates, apply again with the same domain and
-`-var enable_custom_domain=true`; Terraform then requests/validates the ACM
-certificate, configures the API domain, and creates A/AAAA alias records. Using
-`enable_custom_domain=true` without a domain fails with a clear precondition.
+The backend bucket and region are fixed in `backend.tf`; confirm these and the
+scope role in `permissions.tf` match the intended account before initializing.
 
-The Route 53 hosted zone is billable at about **$0.50/month only after you
-provide a domain name**; a domain registration may cost extra. Lambda, HTTP API, S3 storage,
-and CloudWatch Logs have usage-based charges and account-dependent Free Tier
-eligibility. S3 versioning retains overwritten object versions; delete test
-objects and destroy the stack when finished. This design avoids NAT gateway
-and interface endpoint hourly charges.
+## Preflight and deploy
 
-The previous multi-f resources have state-move declarations in `moved.tf` so
-retained objects can keep their Terraform identities as they enter modules.
-The old public subnet/Internet Gateway path is retired in favor of private
-Lambda subnets and the S3 gateway endpoint. Review the Terraform plan carefully
-before applying: removal of the old public networking resources is expected.
-No plan or apply has been run as part of this code change.
+Run the scope preflight from `infra-test/`:
 
-The standalone EC2 test scope is retired. Its remote state object, if present,
-is not destroyed or removed by this configuration change.
+```powershell
+.\check_scopes.ps1
+```
+
+Then, from this directory:
+
+```sh
+terraform init
+terraform validate
+terraform plan
+terraform apply
+```
+
+With the default blank `domain_name` and `enable_custom_domain = false`, the
+regional API endpoint is available from `terraform output api_url`; no hosted
+zone or certificate is created.
+
+## Optional custom domain
+
+Only configure this after you own a registered domain. First set the domain
+while leaving `enable_custom_domain = false`, then apply and retrieve
+`terraform output route53_name_servers`. Delegate those name servers at the
+registrar and wait for DNS propagation. Then set `enable_custom_domain = true`
+and apply again to request/validate the ACM certificate and configure the API
+domain and DNS aliases. Enabling the custom domain with a blank domain is
+invalid.
+
+The Route 53 hosted zone incurs a recurring charge when created (check current
+AWS pricing); domain registration may cost extra. Lambda, HTTP API, S3, and
+CloudWatch Logs also have usage-based charges. S3 versioning retains previous
+object versions; delete test objects and review the plan before destroying the
+stack.
+
+## Existing state and teardown
+
+`moved.tf` declares state moves for resources moved into modules. The previous
+public-subnet/Internet-Gateway networking path is retired in favor of private
+subnets and the S3 gateway endpoint. If using existing state, inspect the
+Terraform plan carefully; removal of retired resources may be expected, but
+must be verified for your environment before applying.
+
+Destroy this stack from this directory when testing is complete, after
+reviewing the plan. The retired EC2 test scope and its former state key are not
+managed or deleted by this configuration.

@@ -32,7 +32,7 @@ role assumption, not a general-purpose administrator policy.
 
 | Variable | Purpose | Default |
 | --- | --- | --- |
-| `account_label` | Account identifier used in role names and tags. | `Secondary_AWS_Account` |
+| `account_label` | Account identifier used in role names and tags; the backend IAM user is named `terraform-backend-${account_label}`. | `prod-demo-account-permissions` |
 | `aws_region` | AWS region used by the provider and state permissions. | `us-east-1` |
 | `state_bucket_name` | S3 bucket containing Terraform state. | `Secondary-AWS-Account-tf-state-285629514281` |
 | `lock_table_name` | DynamoDB state-lock table. | `terraform-locks` |

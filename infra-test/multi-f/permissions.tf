@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "apply_trust" {
     condition {
       test     = "ArnEquals"
       variable = "aws:PrincipalArn"
-      values   = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/terraform-backend-Secondary_AWS_Account"]
+      values   = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${var.backend_identity_user_name}"]
     }
   }
 }

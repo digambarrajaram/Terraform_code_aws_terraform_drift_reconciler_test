@@ -4,6 +4,12 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+variable "backend_identity_user_name" {
+  description = "IAM user name created by account-permissions and allowed to assume the multi-f apply role."
+  type        = string
+  default     = "terraform-backend-prod-demo-account-permissions"
+}
+
 variable "domain_name" {
   description = "Optional registered DNS domain for a Route 53 hosted zone and API custom domain; leave blank until you own one."
   type        = string

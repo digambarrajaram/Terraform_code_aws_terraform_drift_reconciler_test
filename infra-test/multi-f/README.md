@@ -36,6 +36,7 @@ required. The main inputs are:
 | Variable | Purpose | Default |
 | --- | --- | --- |
 | `aws_region` | Region for the stack. | `us-east-1` |
+| `backend_identity_user_name` | IAM user name created by `account-permissions` and allowed to assume this scope's apply role. Set it to match that root's `account_label`. | `terraform-backend-prod-demo-account-permissions` |
 | `domain_name` | Optional registered DNS domain; blank disables DNS resources. | `""` |
 | `api_subdomain_label` | Label used for the API custom hostname. | `api` |
 | `enable_custom_domain` | Enables the custom domain after DNS delegation. | `false` |
@@ -47,6 +48,9 @@ required. The main inputs are:
 
 The backend bucket and region are fixed in `backend.tf`; confirm these and the
 scope role in `permissions.tf` match the intended account before initializing.
+The apply-role trust condition uses `backend_identity_user_name`; keep it in
+sync with the backend user created by `account-permissions` (whose name is
+`terraform-backend-${account_label}`).
 
 ## Preflight and deploy
 

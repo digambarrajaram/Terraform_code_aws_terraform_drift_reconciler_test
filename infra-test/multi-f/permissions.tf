@@ -29,7 +29,13 @@ data "aws_iam_policy_document" "apply_trust" {
 
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/terraform-backend-Secondary_AWS_Account"]
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+    }
+
+    condition {
+      test     = "ArnEquals"
+      variable = "aws:PrincipalArn"
+      values   = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/terraform-backend-Secondary_AWS_Account"]
     }
   }
 }
@@ -112,8 +118,8 @@ data "aws_iam_policy_document" "multi_f_apply" {
       "lambda:GetPolicy", "lambda:TagResource", "lambda:UntagResource", "lambda:ListTags",
     ]
     resources = [
-      "arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:${local.name_prefix}-hello",
-      "arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:${local.name_prefix}-hello:*",
+      "arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:${local.name_prefix}-prod-demo",
+      "arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:${local.name_prefix}-prod-demo:*",
     ]
   }
 
@@ -145,8 +151,8 @@ data "aws_iam_policy_document" "multi_f_apply" {
       "logs:AssociateKmsKey", "logs:DisassociateKmsKey",
     ]
     resources = [
-      "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.name_prefix}-hello",
-      "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.name_prefix}-hello:*",
+      "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.name_prefix}-prod-demo",
+      "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.name_prefix}-prod-demo:*",
       "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/apigateway/${local.name_prefix}",
       "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/apigateway/${local.name_prefix}:*",
     ]
@@ -264,14 +270,14 @@ data "aws_iam_policy_document" "multi_f_apply" {
     sid       = "ScopeStateAccess"
     effect    = "Allow"
     actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
-    resources = ["arn:aws:s3:::sec-acc-tf-state-285629514281/multi_f/terraform.tfstate", "arn:aws:s3:::sec-acc-tf-state-285629514281/multi_f/terraform.tfstate.tflock"]
+    resources = ["arn:aws:s3:::prod-demo-tf-state-285629514281/multi_f/terraform.tfstate", "arn:aws:s3:::prod-demo-tf-state-285629514281/multi_f/terraform.tfstate.tflock"]
   }
 
   statement {
     sid       = "ScopeStateBucketList"
     effect    = "Allow"
     actions   = ["s3:ListBucket"]
-    resources = ["arn:aws:s3:::sec-acc-tf-state-285629514281"]
+    resources = ["arn:aws:s3:::prod-demo-tf-state-285629514281"]
 
     condition {
       test     = "StringLike"

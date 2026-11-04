@@ -4,7 +4,7 @@
 variable "account_label" {
   description = "Short label for this account"
   type        = string
-  default = "Secondary_AWS_Account"
+  default = "prod-demo-account-permissions"
 }
 
 variable "aws_region" {
@@ -16,7 +16,7 @@ variable "aws_region" {
 variable "state_bucket_name" {
   description = "Globally unique S3 bucket name for this account's tfstate"
   type        = string
-  default     = "Secondary-AWS-Account-tf-state-285629514281"
+  default     = "prod-demo-tf-state-285629514281"
 }
 
 variable "lock_table_name" {
@@ -43,13 +43,13 @@ variable "scan_allowed_branch" {
 variable "apply_environment_name" {
   description = "GitHub Environment name (with required reviewers configured) that gates the APPLY role"
   type        = string
-  default     = "sec-acc-apply" # override per account, e.g. "prod-b-apply"
+  default     = "prod-demo-apply-account-permissions" # override per account, e.g. "prod-b-apply"
 }
 
 variable "managed_resource_prefix" {
   description = "Naming prefix used to scope S3/DynamoDB write permissions for the apply role to only resources this project manages (not the whole account)"
   type        = string
-  default = "sec-acc-"
+  default = "prod-demo-account-permissions"
 }
 
 # Set true only in the FIRST account where you create the GitHub OIDC

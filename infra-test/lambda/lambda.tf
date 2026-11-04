@@ -18,7 +18,7 @@ provider "aws" {
 }
 
 locals {
-  function_name = "account-a-hello"
+  function_name = "prod-demo"
 }
 
 data "archive_file" "lambda_package" {
@@ -77,7 +77,7 @@ resource "aws_iam_role_policy" "lambda_logging" {
   })
 }
 
-resource "aws_lambda_function" "hello" {
+resource "aws_lambda_function" "prod-demo" {
   function_name    = local.function_name
   role             = aws_iam_role.lambda_execution.arn
   handler          = "index.lambda_handler"
@@ -92,10 +92,10 @@ resource "aws_lambda_function" "hello" {
 
 output "lambda_function_name" {
   description = "Deployed Lambda function name."
-  value       = aws_lambda_function.hello.function_name
+  value       = aws_lambda_function.prod-demo.function_name
 }
 
 output "lambda_function_arn" {
   description = "Deployed Lambda function ARN."
-  value       = aws_lambda_function.hello.arn
+  value       = aws_lambda_function.prod-demo.arn
 }

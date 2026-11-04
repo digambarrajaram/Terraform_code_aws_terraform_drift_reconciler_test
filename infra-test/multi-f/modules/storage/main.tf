@@ -27,6 +27,11 @@ resource "aws_s3_bucket_versioning" "this" {
   versioning_configuration {
     status = "Enabled"
   }
+
+  versioning_configuration = [{
+    mfa_delete = "Disabled"
+    status     = "Suspended"
+  }]
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "this" {

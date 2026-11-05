@@ -69,8 +69,8 @@ resource "aws_lambda_function" "this" {
   runtime                        = "python3.12"
   filename                       = data.archive_file.lambda_package.output_path
   source_code_hash               = data.archive_file.lambda_package.output_base64sha256
-  memory_size                    = 128
-  timeout                        = 10
+  memory_size                    = 512
+  timeout                        = 30
   publish                        = true
   architectures                  = ["arm64"]
   reserved_concurrent_executions = -1

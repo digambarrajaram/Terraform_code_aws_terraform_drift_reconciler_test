@@ -6,7 +6,7 @@ data "archive_file" "lambda_package" {
 
 resource "aws_cloudwatch_log_group" "lambda" {
   name              = "/aws/lambda/${var.name_prefix}-hello"
-  retention_in_days = 30
+  retention_in_days = 14
   tags              = merge(var.tags, { Name = "${var.name_prefix}-lambda-logs" })
 }
 
@@ -68,7 +68,7 @@ resource "aws_lambda_function" "this" {
   handler                        = "handler.lambda_handler"
   runtime                        = "python3.12"
   filename                       = data.archive_file.lambda_package.output_path
-  source_code_hash               = data.archive_file.lambda_package.output_base64sha256
+  source_code_hash               = "uEUWUGpE180wyZGkPp1vGts+lBBk/NHDQu8UI9V8edA="
   memory_size                    = 128
   timeout                        = 10
   publish                        = true
@@ -99,5 +99,5 @@ resource "aws_lambda_alias" "live" {
   name             = "live"
   description      = "Stable production-style alias for API Gateway integration."
   function_name    = aws_lambda_function.this.function_name
-  function_version = "27"
+  function_version = "29"
 }

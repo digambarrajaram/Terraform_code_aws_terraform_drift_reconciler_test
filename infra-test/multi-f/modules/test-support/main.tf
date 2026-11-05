@@ -14,10 +14,3 @@ resource "aws_dynamodb_table" "items" {
 
   tags = merge(var.tags, { Name = "${var.name_prefix}-items" })
 }
-
-resource "aws_sns_topic" "events" {
-  name = "${var.name_prefix}-events"
-  tags = merge(var.tags, { Name = "${var.name_prefix}-events" })
-
-  kms_master_key_id = "alias/aws/sns"
-}
